@@ -27,6 +27,7 @@ import tensorflow as tf
 from official.modeling import hyperparams
 from official.modeling import performance
 from official.utils import hyperparams_flags
+from official.utils.flags import core as flags_core
 from official.utils.misc import distribution_utils
 from official.utils.misc import keras_utils
 from official.vision.image_classification import callbacks as custom_callbacks
@@ -279,6 +280,7 @@ def define_classifier_flags():
       'log_steps',
       default=100,
       help='The interval of steps between logging of batch level stats.')
+  flags_core.define_performance(tf_data_service=True)
 
 
 def serialize_config(params: base_configs.ExperimentConfig,
