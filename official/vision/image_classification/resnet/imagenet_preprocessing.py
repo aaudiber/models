@@ -70,6 +70,7 @@ def process_record_dataset(dataset,
                            dtype=tf.float32,
                            datasets_num_private_threads=None,
                            drop_remainder=False,
+                           tf_data_service=None,
                            tf_data_experimental_slack=False):
   """Given a Dataset with raw records, return an iterator over the records.
 
@@ -125,6 +126,16 @@ def process_record_dataset(dataset,
   options = tf.data.Options()
   options.experimental_slack = tf_data_experimental_slack
   dataset = dataset.with_options(options)
+
+  if tf_data_service and is_training:
+    if not hasattr(tf.data.experimental, 'service'):
+      raise ValueError("The tf_data_service flag requires Tensorflow version "
+                       ">= 2.3.0, but the version is {}".format(tf.__version__))
+    dataset = dataset.apply(tf.data.experimental.service.distribute(
+        processing_mode="parallel_epochs",
+        service=tf_data_service,
+        job_name="resnet"))
+    dataset = dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
   return dataset
 
@@ -279,6 +290,7 @@ def input_fn(is_training,
              parse_record_fn=parse_record,
              input_context=None,
              drop_remainder=False,
+             tf_data_service=None,
              tf_data_experimental_slack=False,
              training_dataset_cache=False,
              filenames=None):
@@ -343,6 +355,7 @@ def input_fn(is_training,
       dtype=dtype,
       datasets_num_private_threads=datasets_num_private_threads,
       drop_remainder=drop_remainder,
+      tf_data_service=tf_data_service,
       tf_data_experimental_slack=tf_data_experimental_slack,
   )
 

@@ -63,6 +63,7 @@ def define_performance(num_parallel_calls=False, inter_op=False, intra_op=False,
                        datasets_num_parallel_batches=False,
                        dynamic_loss_scale=False, fp16_implementation=False,
                        loss_scale=False,
+                       tf_data_service=False,
                        tf_data_experimental_slack=False, enable_xla=False,
                        training_dataset_cache=False):
   """Register flags for specifying performance tuning arguments.
@@ -271,6 +272,16 @@ def define_performance(num_parallel_calls=False, inter_op=False, intra_op=False,
             "Determines whether to cache the training dataset on workers. "
             "Typically used to improve training performance when training "
             "data is in remote storage and can fit into worker memory.")
+    )
+
+  if tf_data_service:
+    flags.DEFINE_string(
+        name="tf_data_service",
+        default=None,
+        help=help_wrap(
+            "The URI of a tf.data service to offload preprocessing to "
+            "The URI should be in the format <protocol://address>, e.g. "
+            "grpc://service-host:5050.")
     )
 
   if tf_data_experimental_slack:

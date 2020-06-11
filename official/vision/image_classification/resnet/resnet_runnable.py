@@ -118,6 +118,7 @@ class ResnetRunnable(standard_runnable.StandardTrainable,
         data_dir=self.flags_obj.data_dir,
         batch_size=self.batch_size,
         parse_record_fn=imagenet_preprocessing.parse_record,
+        tf_data_service=self.flags_obj.tf_data_service,
         datasets_num_private_threads=self.flags_obj
         .datasets_num_private_threads,
         dtype=self.dtype,
